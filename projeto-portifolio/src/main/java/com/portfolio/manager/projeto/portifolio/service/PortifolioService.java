@@ -1,11 +1,15 @@
 package com.portfolio.manager.projeto.portifolio.service;
 
+import com.portfolio.manager.projeto.portifolio.dto.PessoaDTO;
+import com.portfolio.manager.projeto.portifolio.enums.Atribuicao;
 import com.portfolio.manager.projeto.portifolio.enums.StatusProjeto;
-import com.portfolio.manager.projeto.portifolio.model.Pessoa;
+import com.portfolio.manager.projeto.portifolio.external.client.PessoaExternaClient;
 import com.portfolio.manager.projeto.portifolio.model.Portifolio;
 import com.portfolio.manager.projeto.portifolio.repository.PortifolioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,8 +19,7 @@ import java.util.List;
 public class PortifolioService {
 
     private final PortifolioRepository portifolioRepository;
-    private final PessoaService pessoaService;
-
+    private final PessoaExternaClient pessoaExternaClient;
     public List<Portifolio> listarTodos() {
         return portifolioRepository.findAll();
     }
@@ -101,22 +104,27 @@ public class PortifolioService {
         }
     }
 
-    public void associarMembro(Long idProjeto, Long idPessoa) {
-        Portifolio projeto = buscarPorId(idProjeto);
-        Pessoa pessoa = pessoaService.buscarPorId(idPessoa);
+    public void associarPessoa(Long portifolioId, Long pessoaId) {
 
-        if (!pessoa.isFuncionario()) {
-            throw new IllegalStateException("Apenas membros com a atribuição 'funcionário' podem ser associados.");
+        Portifolio portifolio = portifolioRepository.findById(portifolioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        PessoaDTO pessoa = pessoaExternaClient.buscarPorId(pessoaId);
+
+        if (pessoa.getAtribuicao() != Atribuicao.FUNCIONARIO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Apenas pessoas com atribuição FUNCIONARIO podem ser associadas");
         }
 
-        if (projeto.getMembros().size() >= 10) {
-            throw new IllegalStateException("Cada projeto deve permitir a alocação de no máximo 10 membros.");
+        if (portifolio.getPessoasIds().size() >= 10) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Projeto já possui 10 pessoas");
         }
 
-
-        projeto.getMembros().add(pessoa);
-        portifolioRepository.save(projeto);
+        portifolio.getPessoasIds().add(pessoaId);
+        portifolioRepository.save(portifolio);
     }
+
 
 }
 

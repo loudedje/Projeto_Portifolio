@@ -65,11 +65,12 @@ public class PortifolioController {
 
         return ResponseEntity.ok(PortifolioMapper.toDTO(atualizado));
     }
-    @PostMapping("/{idProjeto}/membros/{idPessoa}")
-
-    public ResponseEntity<Void> adicionarMembro(@PathVariable Long idProjeto, @PathVariable Long idPessoa) {
-        portifolioService.associarMembro(idProjeto, idPessoa);
-        return ResponseEntity.ok().build();
+    @PostMapping("/{projetoId}/pessoas/{pessoaId}")
+    public void associarPessoa(
+            @PathVariable Long projetoId,
+            @PathVariable Long pessoaId
+    ) {
+        portifolioService.associarPessoa(projetoId, pessoaId);
     }
-
 }
+

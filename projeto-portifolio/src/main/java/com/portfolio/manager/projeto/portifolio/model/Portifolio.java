@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Table(name = "Projeto")
 @Entity
@@ -42,16 +44,14 @@ public class Portifolio {
 
     private String risco;
 
-    @ManyToOne
-    @JoinColumn(name = "idgerente")
-    private Pessoa gerente; // Relacionamento com a entidade membro (pessoa)
 
-    @ManyToMany
-    @JoinTable(
-            name = "membros",
-            joinColumns = @JoinColumn(name = "idprojeto"),
-            inverseJoinColumns = @JoinColumn(name = "idpessoa")
+    @ElementCollection
+    @CollectionTable(
+            name = "Portifolio_pessoas",
+            joinColumns = @JoinColumn(name = "portifolio_id")
     )
-    private List<Pessoa> membros = new ArrayList<>();
+    @Column(name = "pessoa_id")
+    private Set<Long> pessoasIds = new HashSet<>();
+
 }
 
