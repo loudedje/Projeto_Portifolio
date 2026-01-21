@@ -4,6 +4,7 @@ import com.portfolio.manager.projeto.portifolio.dto.PessoaDTO;
 import com.portfolio.manager.projeto.portifolio.enums.Atribuicao;
 import com.portfolio.manager.projeto.portifolio.enums.StatusProjeto;
 import com.portfolio.manager.projeto.portifolio.external.client.PessoaExternaClient;
+import com.portfolio.manager.projeto.portifolio.external.controller.PessoaController;
 import com.portfolio.manager.projeto.portifolio.model.Portifolio;
 import com.portfolio.manager.projeto.portifolio.repository.PortifolioRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class PortifolioService {
 
     private final PortifolioRepository portifolioRepository;
     private final PessoaExternaClient pessoaExternaClient;
+    private final PessoaController pessoaController;
     public List<Portifolio> listarTodos() {
         return portifolioRepository.findAll();
     }
@@ -30,6 +32,7 @@ public class PortifolioService {
     }
 
     public Portifolio salvar(Portifolio portifolio) {
+        validarGerenteExistente(portifolio.getIdGerente());
         if (portifolio.getId() != null) {
             Portifolio portifolioExistente = buscarPorId(portifolio.getId());
             transicaoStatus(portifolioExistente.getStatus(), portifolio.getStatus());
@@ -68,7 +71,7 @@ public class PortifolioService {
             case PLANEJADO -> novo == StatusProjeto.INICIADO;
             case INICIADO -> novo == StatusProjeto.EM_ANDAMENTO;
             case EM_ANDAMENTO -> novo == StatusProjeto.ENCERRADO;
-            default -> false; // ENCERRADO ou outros estados finais não permitem transição
+            default -> false;
         };
 
         if (!transicaoValida) {
@@ -77,13 +80,14 @@ public class PortifolioService {
     }
 
     public void excluir(Long id) {
-        Portifolio projeto = buscarPorId(id);
-
-        if (List.of(StatusProjeto.INICIADO, StatusProjeto.EM_ANDAMENTO, StatusProjeto.ENCERRADO)
-                .contains(projeto.getStatus())) {
-            throw new IllegalStateException("Não é possível excluir projetos com status: " + projeto.getStatus());
+        Portifolio projeto = portifolioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
+        if (projeto.getStatus() == StatusProjeto.INICIADO||
+                projeto.getStatus() == StatusProjeto.EM_ANDAMENTO ||
+                projeto.getStatus() == StatusProjeto.ENCERRADO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Erro: Projetos com status " + projeto.getStatus() + " não podem ser excluídos.");
         }
-
         portifolioRepository.delete(projeto);
     }
 
@@ -107,25 +111,44 @@ public class PortifolioService {
     public void associarPessoa(Long portifolioId, Long pessoaId) {
 
         Portifolio portifolio = portifolioRepository.findById(portifolioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Projeto não encontrado"));
 
-        PessoaDTO pessoa = pessoaExternaClient.buscarPorId(pessoaId);
+        PessoaDTO pessoa;
+        try {
+            pessoa = pessoaExternaClient.buscarPorId(pessoaId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pessoa ID " + pessoaId + " não encontrada no sistema externo.");
+        }
 
-        if (pessoa.getAtribuicao() != Atribuicao.FUNCIONARIO) {
+        if (!Atribuicao.FUNCIONARIO.equals(pessoa.getAtribuicao())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Apenas pessoas com atribuição FUNCIONARIO podem ser associadas");
+                    "Erro: A pessoa " + pessoa.getNome() + " é " + pessoa.getAtribuicao() +
+                            ". Apenas membros com atribuição FUNCIONARIO podem ser associados.");
         }
 
         if (portifolio.getPessoasIds().size() >= 10) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Projeto já possui 10 pessoas");
+                    "Limite atingido: O projeto já possui 10 membros.");
         }
 
         portifolio.getPessoasIds().add(pessoaId);
         portifolioRepository.save(portifolio);
     }
 
+    private void validarGerenteExistente(Long idGerente) {
+        if (idGerente == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O projeto deve ter um gerente responsável.");
+        }
 
-}
+        try {
+            pessoaController.buscar(idGerente);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gerente não encontrado com o ID: " + idGerente);
+        }
+    }
+    }
+
+
+
 
 

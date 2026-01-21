@@ -12,11 +12,14 @@ public class PortifolioMapper {
         dto.setId(p.getId());
         dto.setNome(p.getNome());
         dto.setDataInicio(p.getDataInicio());
-        dto.setDataprevisaoFim(p.getDataPrevisaoFim());
+        dto.setDataPrevisaoFim(p.getDataPrevisaoFim());
         dto.setDataFim(p.getDataFim());
         dto.setOrcamento(p.getOrcamento());
         dto.setStatus(p.getStatus());
         dto.setRisco(p.getRisco());
+        dto.setDescricao(p.getDescricao());
+        dto.setIdGerente(p.getIdGerente());
+
         return dto;
     }
 
@@ -27,12 +30,14 @@ public class PortifolioMapper {
         p.setId(dto.getId());
         p.setNome(dto.getNome());
         p.setDataInicio(dto.getDataInicio());
-        p.setDataPrevisaoFim(dto.getDataprevisaoFim());
+        p.setDataPrevisaoFim(dto.getDataPrevisaoFim());
         p.setDataFim(dto.getDataFim());
         p.setOrcamento(dto.getOrcamento());
         p.setDescricao(dto.getDescricao());
         p.setStatus(dto.getStatus());
         p.setRisco(dto.getRisco());
+        p.setIdGerente(dto.getIdGerente());
+
 
         return p;
     }
