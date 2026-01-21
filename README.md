@@ -1,4 +1,4 @@
-# 📊 Gerenciador de Portfólio de Projetos
+#  Gerenciador de Portfólio de Projetos
 
 Este projeto é uma API REST desenvolvida para o gerenciamento de portfólio de projetos. O sistema permite o controle completo do ciclo de vida de um projeto, desde a análise inicial até o encerramento, garantindo regras de negócio para membros e segurança na exclusão de dados.
 
