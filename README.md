@@ -1,36 +1,44 @@
-#Gerenciador de Portfólio de Projetos
+# 📊 Gerenciador de Portfólio de Projetos
 
-Este projeto é um sistema de gerenciamento de portfólio de projetos, desenvolvido como parte de um desafio técnico. O sistema permite o controle completo de projetos, associando membros, gerentes e validando regras de negócio rigorosas.
+Este projeto é uma API REST desenvolvida para o gerenciamento de portfólio de projetos. O sistema permite o controle completo do ciclo de vida de um projeto, desde a análise inicial até o encerramento, garantindo regras de negócio para membros e segurança na exclusão de dados.
 
-🚀 Tecnologias Utilizadas
-Java 17
+---
 
-Spring Boot 3
+## 🚀 Tecnologias Utilizadas
+* **Java 17**
+* **Spring Boot 3**
+* **Spring Data JPA** 
+* **PostgreSQL** 
+* **Swagger/OpenAPI** 
 
-Spring Data JPA (Persistência de dados)
+---
 
-PostgreSQL/H2 (Banco de dados)
+## 🛠️ Regras de Negócio Implementadas
 
-Lombok 
+### 1. Restrição de Membros
+* Apenas pessoas cadastradas com a atribuição **FUNCIONÁRIO** podem ser associadas como membros de um projeto. O sistema bloqueia a associação de Gerentes ou outros tipos de membros.
 
-Maven 
+### 2. Validação de Exclusão
+* Para preservar o histórico, projetos com os seguintes status **NÃO** podem ser excluídos:
+  * `INICIADO`
+  * `EM ANDAMENTO`
+  * `ENCERRADO`
+* O sistema retornará um erro `400 Bad Request` caso o usuário tente realizar essa operação.
+  Fiz a logica não saiu bem no postman.
 
-🛠️ Regras de Negócio Implementadas
-Restrição de Membros: Apenas pessoas com a atribuição FUNCIONÁRIO podem ser associadas a um projeto.
+### 3. Cálculo Dinâmico de Risco
+O risco do projeto é calculado automaticamente seguindo os critérios:
+* **Baixo Risco:** Orçamento até R$ 100.000 e prazo de conclusão ≤ 3 meses.
+* **Médio Risco:** Orçamento entre R$ 100.001 e R$ 500.000 OU prazo entre 3 a 6 meses.
+* **Alto Risco:** Orçamento acima de R$ 500.000 OU prazo superior a 6 meses.
 
-Cálculo de Risco: Sistema de classificação de risco para cada projeto(
-• A classificação de risco deve ser calculada dinamicamente com base nas seguintes regras:
-• Baixo risco: orçamento até R$ 100.000 e prazo ≤ 3 meses
-• Médio risco: orçamento entre R$ 100.001 e R$ 500.000 ou prazo entre 3 a 6 meses
-• Alto risco: orçamento acima de R$ 500.000 ou prazo superior a 6 meses)
+### 4. Integração
+* Consumo de API externa para validação de dados de pessoas e gerentes responsáveis.
 
-Integração Externa: Consumo de API externa para validação de pessoas e gerentes.
+---
 
-🏁 Como Executar o Projeto
-Clone o repositório:
+## 🏁 Como Executar o Projeto
 
-Bash
-
-git clone https://github.com/loudedje/Projeto_Portifolio.git
-
-O sistema estará disponível em http://localhost:8080.
+1. **Clone o repositório:**
+   ```bash
+   git clone [https://github.com/loudedje/Projeto_Portifolio.git](https://github.com/loudedje/Projeto_Portifolio.git)
