@@ -42,6 +42,9 @@ public class Portifolio {
     @Enumerated(EnumType.STRING)
     private StatusProjeto status;
 
+    @Column(name = "id_gerente")
+    private Long idGerente;
+
     private String risco;
 
 

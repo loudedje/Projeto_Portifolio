@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api-externa/pessoas")
-@RequiredArgsConstructor
 public class PessoaController {
 
     private final Map<Long, PessoaDTO> banco = new HashMap<>();

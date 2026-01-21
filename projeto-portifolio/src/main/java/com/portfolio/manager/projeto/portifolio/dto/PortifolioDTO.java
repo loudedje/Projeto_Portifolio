@@ -15,10 +15,11 @@ public class PortifolioDTO {
     private Long id;
     private String  nome;
     private LocalDate dataInicio;
-    private LocalDate dataprevisaoFim;
+    private LocalDate dataPrevisaoFim;
     private LocalDate dataFim;
     private BigDecimal orcamento;
     private StatusProjeto status;
     private String risco;
     private String descricao;
+    private Long idGerente;
 }
