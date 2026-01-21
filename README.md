@@ -24,7 +24,6 @@ Este projeto é uma API REST desenvolvida para o gerenciamento de portfólio de 
   * `EM ANDAMENTO`
   * `ENCERRADO`
 * O sistema retornará um erro `400 Bad Request` caso o usuário tente realizar essa operação.
-  Fiz a logica não saiu bem no postman.
 
 ### 3. Cálculo Dinâmico de Risco
 O risco do projeto é calculado automaticamente seguindo os critérios:
