@@ -41,4 +41,4 @@ O risco do projeto é calculado automaticamente seguindo os critérios:
 
 1. **Clone o repositório:**
    ```bash
-   git clone [https://github.com/loudedje/Projeto_Portifolio.git](https://github.com/loudedje/Projeto_Portifolio.git)
+   git clone:  https://github.com/loudedje/Projeto_Portifolio.git
