@@ -35,4 +35,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         # Entra na pasta onde o seu pom.xml realmente está
         working-directory: projeto-portifolio
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=loudedje_Projeto_Portifolio
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
