@@ -3,9 +3,9 @@ spring:
     name: projeto-portifolio
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/portifolio
-    username: postgres
-    password: root
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/portifolio}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
 
   jpa:

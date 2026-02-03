@@ -4,6 +4,7 @@ import com.portfolio.manager.projeto.portifolio.dto.PessoaDTO;
 import com.portfolio.manager.projeto.portifolio.enums.Atribuicao;
 import com.portfolio.manager.projeto.portifolio.enums.StatusProjeto;
 import com.portfolio.manager.projeto.portifolio.external.client.PessoaExternaClient;
+import com.portfolio.manager.projeto.portifolio.external.controller.PessoaController;
 import com.portfolio.manager.projeto.portifolio.model.Portifolio;
 import com.portfolio.manager.projeto.portifolio.repository.PortifolioRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,9 @@ class PortifolioServiceTest {
     @Mock
     private PessoaExternaClient pessoaExternaClient;
 
+    @Mock
+    private PessoaController pessoaController;
+
     @InjectMocks
     private PortifolioService portifolioService;
 
@@ -43,6 +47,7 @@ class PortifolioServiceTest {
     void setUp() {
         projeto = new Portifolio();
         projeto.setId(1L);
+        projeto.setIdGerente(1L);
         projeto.setNome("Projeto Original");
         projeto.setStatus(StatusProjeto.EM_ANALISE);
         projeto.setOrcamento(new BigDecimal("50000"));
@@ -59,6 +64,7 @@ class PortifolioServiceTest {
         when(portifolioRepository.findById(1L)).thenReturn(Optional.of(projeto));
 
         when(portifolioRepository.save(any())).thenReturn(projeto);
+        when(pessoaController.buscar(1L)).thenReturn(new PessoaDTO());
 
         Portifolio salvo = portifolioService.salvar(projeto);
 
@@ -70,6 +76,7 @@ class PortifolioServiceTest {
         projeto.setOrcamento(new BigDecimal("200000")); // Entre 100k e 500k
         when(portifolioRepository.findById(1L)).thenReturn(Optional.of(projeto));
         when(portifolioRepository.save(any())).thenReturn(projeto);
+        when(pessoaController.buscar(1L)).thenReturn(new PessoaDTO());
 
         Portifolio salvo = portifolioService.salvar(projeto);
 
@@ -83,6 +90,7 @@ class PortifolioServiceTest {
         projeto.setDataPrevisaoFim(LocalDate.now().plusMonths(1));
         when(portifolioRepository.findById(1L)).thenReturn(Optional.of(projeto));
         when(portifolioRepository.save(any())).thenReturn(projeto);
+        when(pessoaController.buscar(1L)).thenReturn(new PessoaDTO());
 
         Portifolio salvo = portifolioService.salvar(projeto);
 
@@ -122,7 +130,7 @@ class PortifolioServiceTest {
         projeto.setStatus(StatusProjeto.INICIADO);
         when(portifolioRepository.findById(1L)).thenReturn(Optional.of(projeto));
 
-        assertThrows(IllegalStateException.class, () -> portifolioService.excluir(1L));
+        assertThrows(ResponseStatusException.class, () -> portifolioService.excluir(1L));
     }
 
     @Test
